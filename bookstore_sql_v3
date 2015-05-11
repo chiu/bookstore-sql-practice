@@ -1,0 +1,168 @@
+Exercise 1
+Fetch ISBN of all book editions published by the publisher "Random House". You should have 3 results.
+
+SELECT e.isbn FROM editions AS e, publishers as p WHERE
+p.id = e.publisher_id AND p.name = 'Random House';
+
+
+SELECT e.isbn FROM editions AS e INNER JOIN publishers as p ON (e.publisher_id = p.id)
+WHERE
+p.name = 'Random House'
+
+
+
+Exercise 2
+Instead of just their ISBN number, fetch their Book Title as well. You should still have the same 3 results but with more information. But instead of just one column, we should have 2 columns in the result set.
+
+SELECT e.isbn, b.title FROM (editions AS e INNER JOIN publishers as p ON (e.publisher_id = p.id)) JOIN books as b ON (e.book_id = b.id)
+WHERE
+p.name = 'Random House'
+
+SELECT e.isbn, b.title FROM (editions AS e INNER JOIN publishers as p ON (e.publisher_id = p.id)) INNER JOIN books as b ON (e.book_id = b.id)
+WHERE
+p.name = 'Random House'
+
+SELECT e.isbn, b.title FROM (editions AS e INNER JOIN publishers as p ON (e.publisher_id = p.id)) INNER JOIN books as b ON (e.book_id = b.id)
+WHERE
+p.name = 'Random House'
+
+
+
+
+Exercise 3
+Also include their stock information (available stock and retail price for each book edition). You should still have the same 3 results but with more information. But instead of just 2 columns, we should have 4 columns in the result set.
+SELECT e.isbn, b.title, s.stock, s.retail FROM (editions AS e INNER JOIN publishers as p ON (e.publisher_id = p.id)) INNER JOIN books as b ON (e.book_id = b.id) INNER JOIN stock as s ON (s.isbn = e.isbn)
+WHERE
+p.name = 'Random House'
+
+
+Exercise 4
+Exercise 4
+Note how one of the of books has 0 stock. Modify the query to only return books that are in stock.
+SELECT e.isbn, b.title, s.stock, s.retail FROM (editions AS e INNER JOIN publishers as p ON (e.publisher_id = p.id)) INNER JOIN books as b ON (e.book_id = b.id) INNER JOIN stock as s ON (s.isbn = e.isbn)
+WHERE
+p.name = 'Random House'
+AND s.stock <> 0
+
+SELECT e.isbn, b.title, s.stock, s.retail FROM (editions AS e INNER JOIN publishers as p ON (e.publisher_id = p.id)) INNER JOIN books as b ON (e.book_id = b.id) INNER JOIN stock as s ON (s.isbn = e.isbn)
+WHERE
+p.name = 'Random House'
+AND s.stock <> 0
+
+Exercise 5
+Hardcover vs Paperback
+
+Editions has a column called "type". Include the print type but instead of just displaying "h" or "p" (the values in the column) output the human readable types ("hardcover" and "paperback" accordingly)
+
+Hint: Use a CASE statement to manipulate your result set, as in this example.
+
+SELECT *,
+CASE WHEN type LIKE 'h' THEN 'hardcover'
+ WHEN type LIKE 'p' THEN 'paperback'
+END AS readable
+FROM editions 
+
+
+
+
+
+
+
+Exercise 6
+List all book titles along with their publication dates (column on the editions dates) That's 2 columns: "title" and "publication"
+
+books and editions
+
+
+
+Important Notes: * Certain books (such as "Learning Python") don't have any editions but we still want to see those books in the results. They just shouldn't have a publication date associated with them. * Certain other books (such as "Dune") have multiple editions and they will be repeated multiple times in the result set.
+
+
+SELECT b.title, e.publication
+FROM books as b FULL OUTER JOIN editions as e ON (e.book_id = b.id)
+
+
+SELECT b.title, e.publication
+FROM books as b FULL OUTER JOIN editions as e ON (e.book_id = b.id)
+
+
+
+
+
+
+
+Aggregate Functions
+You can read about how to perform aggregate functions here: http://www.commandprompt.com/ppbook/x8973#AGGREGATEFUNCTIONSTABLE
+
+Exercise 7
+What's the total inventory of books in this library (i.e. how many total copies are in stock)?
+SELECT count(b.id)
+
+FROM books AS b
+
+Exercise 8
+What is the overall average cost and retail price for all books for sale? Return three columns "Average cost", "Average Retail" and "Average Profit"
+SELECT avg(cost) as "Average Cost", avg(retail) as "Average Retail", avg(retail) - avg(cost) as "Average Profit"
+
+from stock
+
+
+Exercise 9
+Which book ID has the most pieces in stock?
+
+Hints: 1. Use an aggregate function combined with LIMIT and ORDER BY clauses. 2. No need to join with the books table since we just want the ID which is already in the editions table.
+
+Grouping results
+Read about grouping here: http://www.commandprompt.com/ppbook/x5802#USINGGROUPBY
+
+SELECT e.book_id, s.stock
+from stock as s INNER JOIN editions as e ON (s.isbn = e.isbn) 
+
+ORDER BY stock DESC
+LIMIT 1
+
+
+Exercise 10
+List author ID along with the full name and the number of books they have written. Output 3 columns: "ID", "Full name" and "Number of Books"
+
+SELECT a.id as "ID", (a.first_name || ' ' ||  a.last_name) AS "Full name", count(b.title) AS "Number of Books"
+FROM books as b INNER JOIN authors as a ON (b.author_id = a.id)
+
+GROUP BY a.id
+ORDER by count(b.title) DESC
+
+
+
+
+
+
+
+
+Exericse 11
+Order the result set above by number of books so that authors with most number of books appear atop the list (descending order).
+SELECT a.id as "ID", (a.first_name || ' ' ||  a.last_name) AS "Full name", count(b.title) AS "Number of Books"
+FROM books as b INNER JOIN authors as a ON (b.author_id = a.id)
+
+GROUP BY a.id
+ORDER by count(b.title) DESC
+
+
+
+
+
+
+
+
+
+Advanced, Bonus Exercises
+Exercise 12
+List books that have both paperback and hardcover editions. That means at least one edition of the book in both formats.
+
+The result contains four books:
+
+The Shining
+Dune
+2001: A Space Odyssey
+The Cat in the Hat
+Exercise 13
+For each publisher, list their average book sale price, number of editions published.
